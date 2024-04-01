@@ -19,6 +19,6 @@ public class PersonEntity {
     private String fio;
     @Column(name = "year_of_birth")
     private int yearOfBirth;
-    @OneToMany
+    @OneToMany(mappedBy = "reader")
     List<BookEntity> books;
 }

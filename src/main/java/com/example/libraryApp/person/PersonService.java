@@ -12,10 +12,10 @@ public class PersonService {
 
 
     public List<PersonEntity> getPeople(){
-        return repository.findAll();
+        return repository.findAllWithBooks();
     }
     public PersonEntity getById(Integer id){
-        return repository.findById(id).orElseThrow(()-> new RuntimeException("Person with id: " + id + " doesn't found"));
+        return repository.findByIdWithBooks(id).orElseThrow(()-> new RuntimeException("Person with id: " + id + " doesn't found"));
     }
     public PersonEntity save(PersonEntity person){
         return repository.save(person);
