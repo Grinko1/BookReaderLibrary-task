@@ -2,7 +2,6 @@ package com.example.libraryApp.book;
 
 import com.example.libraryApp.book.dto.BookWithReaderDtoRequest;
 import com.example.libraryApp.book.dto.BookWithReaderDtoResponse;
-import com.example.libraryApp.book.utils.BookMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,6 @@ import java.util.List;
 @RequestMapping("/books")
 public class BookController {
     private final BookService service;
-    private final BookMapper bookMapper;
 
     @GetMapping
     public ResponseEntity<List<BookWithReaderDtoResponse>> getAllBooks(){
@@ -28,19 +26,19 @@ public class BookController {
     }
     @PostMapping
     public ResponseEntity<BookWithReaderDtoResponse> save(@RequestBody BookWithReaderDtoRequest book){
-        return responseEntityWrapperForBook(service.save(book), HttpStatus.CREATED);
+        return responseEntityWrapperForBook(service.saveOrUpdate(book), HttpStatus.CREATED);
     }
     @PatchMapping("/{id}")
     public ResponseEntity<BookWithReaderDtoResponse> update(@PathVariable("id") Integer id, @RequestBody BookWithReaderDtoRequest book){
         book.setId(id);
-        return responseEntityWrapperForBook(service.update(book), HttpStatus.OK);
+        return responseEntityWrapperForBook(service.saveOrUpdate(book), HttpStatus.OK);
     }
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     public HttpStatus deleteById(@PathVariable("id") Integer id){
-        service.getById(id);
+        service.delete(id);
         return HttpStatus.OK;
     }
-    public ResponseEntity<BookWithReaderDtoResponse> responseEntityWrapperForBook(BookWithReaderDtoResponse book, HttpStatus status){
+    private ResponseEntity<BookWithReaderDtoResponse> responseEntityWrapperForBook(BookWithReaderDtoResponse book, HttpStatus status){
         return new ResponseEntity<>(book, status);
     }
 

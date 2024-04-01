@@ -1,29 +1,34 @@
 package com.example.libraryApp.person;
 
+import com.example.libraryApp.book.BookRepository;
+import com.example.libraryApp.person.dto.PersonWithBooksDto;
+import com.example.libraryApp.person.utils.PersonMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class PersonService {
-    private final PersonRepository repository;
+    private final PersonRepository personRepository;
+    private final BookRepository bookRepository;
+    private final PersonMapper personMapper;
 
 
-    public List<PersonEntity> getPeople(){
-        return repository.findAllWithBooks();
+    public List<PersonWithBooksDto> getPeople(){
+        return personRepository.findAllWithBooks().stream().map(personMapper::mapPersonToPersonDto).collect(Collectors.toList());
     }
     public PersonEntity getById(Integer id){
-        return repository.findByIdWithBooks(id).orElseThrow(()-> new RuntimeException("Person with id: " + id + " doesn't found"));
+       return personRepository.findByIdWithBooks(id).orElseThrow(()-> new RuntimeException("Person with id: " + id + " doesn't found"));
+
     }
-    public PersonEntity save(PersonEntity person){
-        return repository.save(person);
-    }
-    public PersonEntity update(PersonEntity person){
-        return repository.save(person);
+    public PersonWithBooksDto saveOrUpdate(PersonEntity person){
+        return personMapper.mapPersonToPersonDto(personRepository.save(person));
     }
     public void deleteById(Integer id){
-        repository.deleteById(id);
+        bookRepository.updateAllByPersonId(id);
+        personRepository.deleteById(id);
     }
 }

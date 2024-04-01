@@ -6,7 +6,6 @@ import com.example.libraryApp.book.utils.BookMapper;
 import com.example.libraryApp.person.PersonEntity;
 import com.example.libraryApp.person.PersonService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,25 +30,15 @@ public class BookService {
         BookEntity book = repository.findById(id).orElseThrow(()-> new RuntimeException("Book with id " + id  + " doesn't exist"));;
         return bookMapper.mapBookToBookWithReaderDtoResponse(book);
     }
-    public BookWithReaderDtoResponse save(BookWithReaderDtoRequest dto){
-        PersonEntity reader = null;
-        if (dto.getReader_id() != null) {
-            reader = personService.getById(dto.getReader_id());
-
-        }
-        BookEntity book = BookEntity.builder()
-                .name(dto.getName())
-                .author(dto.getAuthor())
-                .year(dto.getYear())
-                .reader(reader)
-                .build();
-        return bookMapper.mapBookToBookWithReaderDtoResponse(repository.save(book));
+    public void delete(Integer id){
+        repository.deleteById(id);
     }
-    public BookWithReaderDtoResponse update(BookWithReaderDtoRequest dto){
+
+
+    public BookWithReaderDtoResponse saveOrUpdate(BookWithReaderDtoRequest dto){
         PersonEntity reader = null;
         if (dto.getReader_id() != null) {
             reader = personService.getById(dto.getReader_id());
-
         }
         BookEntity book = BookEntity.builder()
                 .id(dto.getId())
@@ -59,8 +48,5 @@ public class BookService {
                 .reader(reader)
                 .build();
         return bookMapper.mapBookToBookWithReaderDtoResponse(repository.save(book));
-    }
-    public void delete(Integer id){
-        repository.deleteById(id);
     }
 }
