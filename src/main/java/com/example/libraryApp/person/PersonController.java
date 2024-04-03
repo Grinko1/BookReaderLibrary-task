@@ -25,20 +25,17 @@ public class PersonController {
     @GetMapping("/{id}")
     public ResponseEntity<PersonWithBooksDto> getById(@PathVariable("id") Integer id) {
         PersonWithBooksDto personDto = personMapper.mapPersonToPersonDto(personService.getById(id));
-//        return new ResponseEntity<>(personDto, HttpStatus.OK);
         return responseEntityWrapperForPerson(personDto, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<PersonWithBooksDto> save(@RequestBody PersonEntity person) {
-//        return new ResponseEntity<>(personService.saveOrUpdate(person), HttpStatus.CREATED);
         return responseEntityWrapperForPerson(personService.saveOrUpdate(person), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<PersonWithBooksDto> update(@PathVariable("id") Integer id, @RequestBody PersonEntity person) {
         person.setId(id);
-//        return new ResponseEntity<>(personService.saveOrUpdate(person), HttpStatus.OK);
         return responseEntityWrapperForPerson(personService.saveOrUpdate(person), HttpStatus.OK);
     }
 

@@ -1,6 +1,7 @@
 package com.example.libraryApp.person;
 
 import com.example.libraryApp.book.BookRepository;
+import com.example.libraryApp.exceptions.NotFoundException;
 import com.example.libraryApp.person.dto.PersonWithBooksDto;
 import com.example.libraryApp.person.utils.PersonMapper;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,11 @@ public class PersonService {
 
 
     public List<PersonWithBooksDto> getPeople(){
-        return personRepository.findAllWithBooks().stream().map(personMapper::mapPersonToPersonDto).collect(Collectors.toList());
+//        return personRepository.findAllWithBooks().stream().map(personMapper::mapPersonToPersonDto).collect(Collectors.toList());
+        return personRepository.findAll().stream().map(personMapper::mapPersonToPersonDto).collect(Collectors.toList());
     }
     public PersonEntity getById(Integer id){
-       return personRepository.findByIdWithBooks(id).orElseThrow(()-> new RuntimeException("Person with id: " + id + " doesn't found"));
+       return personRepository.findByIdWithBooks(id).orElseThrow(()-> new NotFoundException("Person: " , "personId" , id));
 
     }
     public PersonWithBooksDto saveOrUpdate(PersonEntity person){
