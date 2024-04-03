@@ -2,7 +2,6 @@ package com.example.libraryApp.book;
 
 import com.example.libraryApp.book.dto.BookWithReaderDtoRequest;
 import com.example.libraryApp.book.dto.BookWithReaderDtoResponse;
-import com.example.libraryApp.book.utils.BookMapper;
 import com.example.libraryApp.exceptions.NotFoundException;
 import com.example.libraryApp.person.PersonEntity;
 import com.example.libraryApp.person.PersonService;
@@ -19,12 +18,10 @@ import java.util.stream.Collectors;
 public class BookService {
     private final BookRepository repository;
     private final PersonService personService;
-    private final BookMapper bookMapper;
     private final ModelMapper modelMapper;
 
 
     public List<BookWithReaderDtoResponse> getAllBooks() {
-//        return repository.findAll().stream().map(bookMapper::mapBookToBookWithReaderDtoResponse).collect(Collectors.toList());
         return repository.findAll().stream().map((book) -> modelMapper.map(book, BookWithReaderDtoResponse.class)).collect(Collectors.toList());
     }
 
@@ -34,8 +31,6 @@ public class BookService {
 
     public BookWithReaderDtoResponse getById(Integer id) {
         BookEntity book = repository.findById(id).orElseThrow(() -> new NotFoundException("Book", "bookId", id));
-
-//        return bookMapper.mapBookToBookWithReaderDtoResponse(book);
         return modelMapper.map(book, BookWithReaderDtoResponse.class);
     }
 
@@ -54,13 +49,5 @@ public class BookService {
 
         return modelMapper.map(repository.save(book), BookWithReaderDtoResponse.class);
 
-//        BookEntity book = BookEntity.builder()
-//                .id(dto.getId())
-//                .name(dto.getName())
-//                .author(dto.getAuthor())
-//                .year(dto.getYear())
-//                .reader(reader)
-//                .build();
-//        return bookMapper.mapBookToBookWithReaderDtoResponse(repository.save(book));
     }
 }

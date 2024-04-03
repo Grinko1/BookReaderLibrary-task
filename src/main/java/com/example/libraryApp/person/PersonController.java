@@ -1,37 +1,28 @@
 package com.example.libraryApp.person;
 
 import com.example.libraryApp.person.dto.PersonWithBooksDto;
-import com.example.libraryApp.person.utils.PersonMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/people")
 public class PersonController {
     private final PersonService personService;
-    private final PersonMapper personMapper;
 
     @GetMapping
     public ResponseEntity<List<PersonWithBooksDto>> getAll() {
         return new ResponseEntity<>(personService.getPeople(), HttpStatus.OK);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<PersonWithBooksDto> getById(@PathVariable("id") Integer id) {
-//        PersonWithBooksDto personDto = personMapper.mapPersonToPersonDto(personService.getById(id));
-//        return responseEntityWrapperForPerson(personDto, HttpStatus.OK);
-//    }
-@GetMapping("/{id}")
-public ResponseEntity<PersonWithBooksDto> getById(@PathVariable("id") Integer id) {
-//    PersonWithBooksDto personDto = personMapper.mapPersonToPersonDto();
-    return responseEntityWrapperForPerson(personService.getById(id), HttpStatus.OK);
-}
+    @GetMapping("/{id}")
+    public ResponseEntity<PersonWithBooksDto> getById(@PathVariable("id") Integer id) {
+        return responseEntityWrapperForPerson(personService.getById(id), HttpStatus.OK);
+    }
 
     @PostMapping
     public ResponseEntity<PersonWithBooksDto> save(@RequestBody PersonEntity person) {
