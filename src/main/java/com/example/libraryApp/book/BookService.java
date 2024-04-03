@@ -7,6 +7,7 @@ import com.example.libraryApp.exceptions.NotFoundException;
 import com.example.libraryApp.person.PersonEntity;
 import com.example.libraryApp.person.PersonService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,10 +20,12 @@ public class BookService {
     private final BookRepository repository;
     private final PersonService personService;
     private final BookMapper bookMapper;
+    private final ModelMapper modelMapper;
 
 
     public List<BookWithReaderDtoResponse> getAllBooks() {
-        return repository.findAll().stream().map(bookMapper::mapBookToBookWithReaderDtoResponse).collect(Collectors.toList());
+//        return repository.findAll().stream().map(bookMapper::mapBookToBookWithReaderDtoResponse).collect(Collectors.toList());
+        return repository.findAll().stream().map((book) -> modelMapper.map(book, BookWithReaderDtoResponse.class)).collect(Collectors.toList());
     }
 
     public List<BookEntity> getBooksByReaderId(Integer id) {
@@ -31,8 +34,9 @@ public class BookService {
 
     public BookWithReaderDtoResponse getById(Integer id) {
         BookEntity book = repository.findById(id).orElseThrow(() -> new NotFoundException("Book", "bookId", id));
-        ;
-        return bookMapper.mapBookToBookWithReaderDtoResponse(book);
+
+//        return bookMapper.mapBookToBookWithReaderDtoResponse(book);
+        return modelMapper.map(book, BookWithReaderDtoResponse.class);
     }
 
     public void delete(Integer id) {
@@ -43,15 +47,20 @@ public class BookService {
     public BookWithReaderDtoResponse saveOrUpdate(BookWithReaderDtoRequest dto) {
         PersonEntity reader = null;
         if (dto.getReader_id() != null) {
-            reader = personService.getById(dto.getReader_id());
+            reader = modelMapper.map(personService.getById(dto.getReader_id()), PersonEntity.class);
         }
-        BookEntity book = BookEntity.builder()
-                .id(dto.getId())
-                .name(dto.getName())
-                .author(dto.getAuthor())
-                .year(dto.getYear())
-                .reader(reader)
-                .build();
-        return bookMapper.mapBookToBookWithReaderDtoResponse(repository.save(book));
+        BookEntity book = modelMapper.map(dto, BookEntity.class);
+        book.setReader(reader);
+
+        return modelMapper.map(repository.save(book), BookWithReaderDtoResponse.class);
+
+//        BookEntity book = BookEntity.builder()
+//                .id(dto.getId())
+//                .name(dto.getName())
+//                .author(dto.getAuthor())
+//                .year(dto.getYear())
+//                .reader(reader)
+//                .build();
+//        return bookMapper.mapBookToBookWithReaderDtoResponse(repository.save(book));
     }
 }
